@@ -10,9 +10,7 @@
     "start": "node ./dist/app.js",
     "dev": "nodemon",
     "build": "rimraf dist && tsc",
-    "postinstall": "npm run build",
-    "migrate": "tsx ./src/scripts/migrate.ts",
-    "migrate:data": "tsx ./src/scripts/migrate-data.ts"
+    "postinstall": "npm run build"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
