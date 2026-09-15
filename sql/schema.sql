@@ -1,16 +1,3 @@
--- ─────────────────────────────────────────────────────────────────────────────
--- Portfolio schema (PostgreSQL) — replaces the Mongoose models 1:1.
---
--- Conventions:
---   * Columns use quoted camelCase so pg rows come back with exactly the keys
---     the frontend already expects (imageUrl, yearsOfExperience, ...).
---   * ids are UUIDs (gen_random_uuid needs PostgreSQL 13+, or the pgcrypto
---     extension which this script enables as a fallback).
---   * created_at / updated_at mirror Mongoose `{ timestamps: true }`.
---   * Array fields (skills, technologies) are text[].
---
--- Safe to re-run: everything is IF NOT EXISTS.
--- ─────────────────────────────────────────────────────────────────────────────
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
