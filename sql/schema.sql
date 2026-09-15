@@ -1,8 +1,7 @@
-
+-- extensions 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- ── Users (auth) ────────────────────────────────────────────────────────────
--- Was models/User.ts. Registration is admin-only; login is rate-limited.
+-- Users (auth) 
 CREATE TABLE IF NOT EXISTS users (
   "id"         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "email"      TEXT NOT NULL UNIQUE,
@@ -10,8 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   "role"       TEXT NOT NULL DEFAULT 'user'
 );
 
--- ── Profile (single row) ────────────────────────────────────────────────────
--- Was models/Profile.ts. The API upserts the one and only profile row.
+-- Profiles - one profile
 CREATE TABLE IF NOT EXISTS profiles (
   "id"         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "userName"   TEXT NOT NULL,
@@ -30,21 +28,18 @@ CREATE TABLE IF NOT EXISTS profiles (
   "cvContent"  TEXT
 );
 
--- ── Skills ──────────────────────────────────────────────────────────────────
--- Was models/Skill.ts (collection "Skills", timestamps: true).
+-- Skills
 CREATE TABLE IF NOT EXISTS skills (
   "id"                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "name"              TEXT NOT NULL,
   "imageUrl"          TEXT NOT NULL,
-  -- Free-form group for the skills page; NULL behaves like "Other" in the UI.
   "category"          TEXT,
   "yearsOfExperience" INTEGER,
   "createdAt"         TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt"         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- ── Projects ────────────────────────────────────────────────────────────────
--- Was models/Project.ts (collection "Projects").
+-- Projects 
 CREATE TABLE IF NOT EXISTS projects (
   "id"           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "title"        TEXT NOT NULL,
@@ -57,8 +52,7 @@ CREATE TABLE IF NOT EXISTS projects (
   "createdAt"    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- ── Education ───────────────────────────────────────────────────────────────
--- Was models/Education.ts.
+-- Education 
 CREATE TABLE IF NOT EXISTS education (
   "id"          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "degree"      TEXT NOT NULL,
@@ -71,8 +65,8 @@ CREATE TABLE IF NOT EXISTS education (
   "createdAt"   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- ── Experience ──────────────────────────────────────────────────────────────
--- Was models/Experience.ts.
+-- Experience
+
 CREATE TABLE IF NOT EXISTS experience (
   "id"          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "role"        TEXT NOT NULL,
@@ -86,11 +80,7 @@ CREATE TABLE IF NOT EXISTS experience (
   "createdAt"   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- ── Recommendations ─────────────────────────────────────────────────────────
--- Was models/Recommendation.ts (timestamps: true).
--- `relation` mirrors the mongoose enum with a CHECK constraint, so a bad value
--- is rejected by the database on create AND update (the mongoose update path
--- needed runValidators for the same reason).
+-- Recommendations 
 CREATE TABLE IF NOT EXISTS recommendations (
   "id"          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "name"        TEXT NOT NULL,
@@ -99,14 +89,9 @@ CREATE TABLE IF NOT EXISTS recommendations (
   "avatar"      TEXT,
   "text"        TEXT NOT NULL,
   "relation"    TEXT NOT NULL CHECK ("relation" IN ('Manager', 'Team Member', 'Freelance', 'College Friend')),
-  -- "YYYY-MM-DD" from the dashboard date picker, empty string when omitted —
-  -- ISO dates already sort correctly as text.
   "date"        TEXT NOT NULL DEFAULT '',
   "linkedinUrl" TEXT,
-  -- Pins the entry to the top of its group and onto the home page.
   "featured"    BOOLEAN NOT NULL DEFAULT FALSE,
-  -- Manual position, lowest first. Defaults high (like DEFAULT_RECOMMENDATION_ORDER = 999)
-  -- so unordered entries sit behind explicitly ordered ones.
   "order"       INTEGER NOT NULL DEFAULT 999,
   "createdAt"   TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt"   TIMESTAMPTZ NOT NULL DEFAULT now()
